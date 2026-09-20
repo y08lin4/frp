@@ -47,23 +47,36 @@ jobs:
         run: |
           VERSION="${{ inputs.tag }}"
           mkdir -p release/packages
-          os_all='linux windows darwin freebsd openbsd android'
-          arch_all='amd64 arm64 arm_hf arm mips64 mips64le mips mipsle riscv64 loong64'
           cd release
+          # Group frpc_/frps_ binaries by target suffix (os_arch),
+          # mirroring the official release layout: one archive per
+          # platform containing both frps and frpc.
           for f in frpc_* frps_*; do
             [ -e "$f" ] || continue
-            os_arch="${f%_*}"
-            [ "${f##*.}" = "exe" ] && os_arch="${f%.*}"
-            case "$f" in
-              *windows*) ext=".zip"; fmt="zip" ;;
-              *) ext=".tar.gz"; fmt="tgz" ;;
+            base="$f"
+            [ "${f##*.}" = "exe" ] && base="${f%.*}"
+            case "$base" in
+              frpc_*) os_arch="${base#frpc_}" ;;
+              frps_*) os_arch="${base#frps_}" ;;
             esac
-            pkg_name="frp_${VERSION}_${os_arch}${ext}"
+            echo "$f -> $os_arch"
+            echo "$os_arch" >> /tmp/os_archs.txt
+          done
+          for os_arch in $(sort -u /tmp/os_archs.txt); do
             pkg_dir="frp_${VERSION}_${os_arch}"
             mkdir -p "./packages/${pkg_dir}"
             cp "../LICENSE" "./packages/${pkg_dir}/"
-            cp "$f" "./packages/${pkg_dir}/"
-            if [ "$fmt" = "zip" ]; then
+            for bin in frpc frps; do
+              src="${bin}_${os_arch}"
+              [ "${os_arch#*windows*}" != "$os_arch" ] && src="${src}.exe"
+              [ -e "$src" ] && cp "$src" "./packages/${pkg_dir}/"
+            done
+            case "$os_arch" in
+              windows*) ext=".zip" ;;
+              *) ext=".tar.gz" ;;
+            esac
+            pkg_name="frp_${VERSION}_${os_arch}${ext}"
+            if [ "$ext" = ".zip" ]; then
               (cd ./packages && zip -q -r "../${pkg_name}" "${pkg_dir}")
             else
               tar -czf "../${pkg_name}" -C ./packages "${pkg_dir}"
