@@ -1,0 +1,39 @@
+name: build-frps-dashboard
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: web
+
+      - name: Type check
+        run: npm run type-check --workspace frps
+        working-directory: web
+
+      - name: Unit tests
+        run: node node_modules/vitest/vitest.mjs run frps
+        working-directory: web
+
+      - name: Build frps dashboard
+        run: npm run build --workspace frps
+        working-directory: web
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frps-dashboard-dist
+          path: web/frps/dist/
+          retention-days: 30
