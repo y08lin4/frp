@@ -79,7 +79,7 @@ jobs:
             if [ "$ext" = ".zip" ]; then
               (cd ./packages && zip -q -r "../${pkg_name}" "${pkg_dir}")
             else
-              tar -czf "../${pkg_name}" -C ./packages "${pkg_dir}"
+              tar -czf "./${pkg_name}" -C ./packages "${pkg_dir}"
             fi
           done
           sha256sum frp_${VERSION}_* > frp_sha256_checksums.txt
