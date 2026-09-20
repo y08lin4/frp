@@ -1,5 +1,6 @@
 <template>
-  <div id="app">
+  <el-config-provider :locale="elLocale">
+    <div id="app">
     <header class="header">
       <div class="header-content">
         <div class="brand-section">
@@ -16,7 +17,7 @@
           </div>
           <span class="divider">/</span>
           <span class="brand-name">frp</span>
-          <span class="badge server-badge">Server</span>
+          <span class="badge server-badge">{{ $t('header.server') }}</span>
         </div>
 
         <div class="header-controls">
@@ -28,6 +29,7 @@
           >
             <GitHubIcon class="github-icon" />
           </a>
+          <LangSwitch class="lang-switch" />
           <el-switch
             v-model="isDark"
             inline-prompt
@@ -58,7 +60,7 @@
             :class="{ active: route.path === '/' }"
             @click="closeSidebar"
           >
-            Overview
+            {{ $t('nav.overview') }}
           </router-link>
           <router-link
             to="/clients"
@@ -66,7 +68,7 @@
             :class="{ active: route.path.startsWith('/clients') }"
             @click="closeSidebar"
           >
-            Clients
+            {{ $t('nav.clients') }}
           </router-link>
           <router-link
             to="/proxies"
@@ -78,7 +80,7 @@
             }"
             @click="closeSidebar"
           >
-            Proxies
+            {{ $t('nav.proxies') }}
           </router-link>
         </nav>
       </aside>
@@ -88,20 +90,52 @@
       </main>
     </div>
   </div>
+  </el-config-provider>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useDark } from '@vueuse/core'
 import { Moon, Sunny } from '@element-plus/icons-vue'
+import enLocale from 'element-plus/es/locale/lang/en'
+import zhCnLocale from 'element-plus/es/locale/lang/zh-cn'
+import zhTwLocale from 'element-plus/es/locale/lang/zh-tw'
+import jaLocale from 'element-plus/es/locale/lang/ja'
+import koLocale from 'element-plus/es/locale/lang/ko'
+import esLocale from 'element-plus/es/locale/lang/es'
+import deLocale from 'element-plus/es/locale/lang/de'
+import frLocale from 'element-plus/es/locale/lang/fr'
+import ruLocale from 'element-plus/es/locale/lang/ru'
+import ptBrLocale from 'element-plus/es/locale/lang/pt-br'
+import viLocale from 'element-plus/es/locale/lang/vi'
 import GitHubIcon from './assets/icons/github.svg?component'
 import LogoIcon from './assets/icons/logo.svg?component'
+import LangSwitch from './components/LangSwitch.vue'
 import { useResponsive } from './composables/useResponsive'
+import type { Locale } from './i18n'
 
 const route = useRoute()
+const { locale } = useI18n()
 const isDark = useDark()
 const { isMobile } = useResponsive()
+
+const EL_LOCALES: Record<Locale, (typeof enLocale)> = {
+  en: enLocale,
+  'zh-CN': zhCnLocale,
+  'zh-TW': zhTwLocale,
+  ja: jaLocale,
+  ko: koLocale,
+  es: esLocale,
+  de: deLocale,
+  fr: frLocale,
+  ru: ruLocale,
+  'pt-BR': ptBrLocale,
+  vi: viLocale,
+}
+
+const elLocale = computed(() => EL_LOCALES[locale.value as Locale] ?? enLocale)
 
 const sidebarOpen = ref(false)
 

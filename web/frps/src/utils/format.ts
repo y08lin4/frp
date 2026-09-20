@@ -1,22 +1,30 @@
-export function formatDistanceToNow(date: Date): string {
+type TimeAgoTranslator = (key: string, params: { n: number }) => string
+
+export function formatDistanceToNow(
+  date: Date,
+  translate?: TimeAgoTranslator,
+): string {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000)
 
+  const ago = (key: string, legacyUnit: string, n: number): string =>
+    translate ? translate(key, { n }) : `${n} ${legacyUnit} ago`
+
   let interval = seconds / 31536000
-  if (interval > 1) return Math.floor(interval) + ' years ago'
+  if (interval > 1) return ago('time.yearsAgo', 'years', Math.floor(interval))
 
   interval = seconds / 2592000
-  if (interval > 1) return Math.floor(interval) + ' months ago'
+  if (interval > 1) return ago('time.monthsAgo', 'months', Math.floor(interval))
 
   interval = seconds / 86400
-  if (interval > 1) return Math.floor(interval) + ' days ago'
+  if (interval > 1) return ago('time.daysAgo', 'days', Math.floor(interval))
 
   interval = seconds / 3600
-  if (interval > 1) return Math.floor(interval) + ' hours ago'
+  if (interval > 1) return ago('time.hoursAgo', 'hours', Math.floor(interval))
 
   interval = seconds / 60
-  if (interval > 1) return Math.floor(interval) + ' minutes ago'
+  if (interval > 1) return ago('time.minutesAgo', 'minutes', Math.floor(interval))
 
-  return Math.floor(seconds) + ' seconds ago'
+  return ago('time.secondsAgo', 'seconds', Math.floor(seconds))
 }
 
 export function formatUnixSeconds(seconds?: number): string {

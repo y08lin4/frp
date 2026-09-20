@@ -1,4 +1,5 @@
 import { formatDistanceToNow } from './format'
+import { i18n } from '../i18n'
 import type { ClientInfoData, ClientStatus } from '../types/client'
 
 export class Client {
@@ -47,19 +48,21 @@ export class Client {
 
   get wireProtocolLabel(): string {
     if (!this.wireProtocol) return ''
-    return `Protocol ${this.wireProtocol}`
+    return i18n.global.t('clientDetail.protocolLabel', {
+      n: this.wireProtocol,
+    })
   }
 
   get firstConnectedAgo(): string {
-    return formatDistanceToNow(this.firstConnectedAt)
+    return formatDistanceToNow(this.firstConnectedAt, i18n.global.t)
   }
 
   get lastConnectedAgo(): string {
-    return formatDistanceToNow(this.lastConnectedAt)
+    return formatDistanceToNow(this.lastConnectedAt, i18n.global.t)
   }
 
   get disconnectedAgo(): string {
     if (!this.disconnectedAt) return ''
-    return formatDistanceToNow(this.disconnectedAt)
+    return formatDistanceToNow(this.disconnectedAt, i18n.global.t)
   }
 }

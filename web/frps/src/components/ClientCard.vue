@@ -39,7 +39,7 @@
 
     <div class="card-action">
       <div class="status-badge" :class="client.online ? 'online' : 'offline'">
-        {{ client.online ? 'Online' : 'Offline' }}
+        {{ client.online ? $t('clientDetail.online') : $t('clientDetail.offline') }}
       </div>
       <el-icon class="arrow-icon"><ArrowRight /></el-icon>
     </div>
@@ -56,6 +56,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
 const router = useRouter()
 
 const viewDetail = () => {
