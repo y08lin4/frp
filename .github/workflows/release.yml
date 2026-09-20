@@ -68,8 +68,11 @@ jobs:
             cp "../LICENSE" "./packages/${pkg_dir}/"
             for bin in frpc frps; do
               src="${bin}_${os_arch}"
-              [ "${os_arch#*windows*}" != "$os_arch" ] && src="${src}.exe"
-              [ -e "$src" ] && cp "$src" "./packages/${pkg_dir}/"
+              case "$os_arch" in
+                windows*) src="${src}.exe"; dest="${bin}.exe" ;;
+                *) dest="${bin}" ;;
+              esac
+              [ -e "$src" ] && cp "$src" "./packages/${pkg_dir}/${dest}"
             done
             case "$os_arch" in
               windows*) ext=".zip" ;;
