@@ -77,7 +77,8 @@ export function detectLocale(): Locale {
     )
     if (prefixMatch) return prefixMatch.value
   }
-  return 'en'
+  // No supported match: default to Simplified Chinese.
+  return 'zh-CN'
 }
 
 export function setLocale(locale: Locale) {
