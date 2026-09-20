@@ -1,0 +1,86 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v0.71.0-zh.1)'
+        required: true
+      prerelease:
+        description: 'Mark as prerelease'
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.25'
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Build web assets (frps)
+        run: make build
+        working-directory: web/frps
+
+      - name: Build web assets (frpc)
+        run: make build
+        working-directory: web/frpc
+
+      - name: Cross compile binaries
+        run: make -f Makefile.cross-compiles
+
+      - name: Package
+        run: |
+          VERSION="${{ inputs.tag }}"
+          mkdir -p release/packages
+          os_all='linux windows darwin freebsd openbsd android'
+          arch_all='amd64 arm64 arm_hf arm mips64 mips64le mips mipsle riscv64 loong64'
+          cd release
+          for f in frpc_* frps_*; do
+            [ -e "$f" ] || continue
+            os_arch="${f%_*}"
+            [ "${f##*.}" = "exe" ] && os_arch="${f%.*}"
+            case "$f" in
+              *windows*) ext=".zip"; fmt="zip" ;;
+              *) ext=".tar.gz"; fmt="tgz" ;;
+            esac
+            pkg_name="frp_${VERSION}_${os_arch}${ext}"
+            pkg_dir="frp_${VERSION}_${os_arch}"
+            mkdir -p "./packages/${pkg_dir}"
+            cp "../LICENSE" "./packages/${pkg_dir}/"
+            cp "$f" "./packages/${pkg_dir}/"
+            if [ "$fmt" = "zip" ]; then
+              (cd ./packages && zip -q -r "../${pkg_name}" "${pkg_dir}")
+            else
+              tar -czf "../${pkg_name}" -C ./packages "${pkg_dir}"
+            fi
+          done
+          sha256sum frp_${VERSION}_* > frp_sha256_checksums.txt
+          ls -la
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: frp ${{ inputs.tag }}（中文社区版）
+          body_path: .github/release-template.md
+          prerelease: ${{ inputs.prerelease }}
+          files: |
+            release/frp_*
+            release/frp_sha256_checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
