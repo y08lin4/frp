@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import i18n from '../i18n'
 import ClientConfigure from '../views/ClientConfigure.vue'
 import ProxyDetail from '../views/ProxyDetail.vue'
 import ProxyEdit from '../views/ProxyEdit.vue'
@@ -79,9 +80,7 @@ router.beforeEach(async (to) => {
     return true
   }
 
-  ElMessage.warning(
-    'Store is disabled. Enable Store in frpc config to create or edit store entries.',
-  )
+  ElMessage.warning(i18n.global.t('config.storeDisabled'))
   return { name: 'ProxyList' }
 })
 

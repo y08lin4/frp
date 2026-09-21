@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
   items: Array<{ status: string }>
@@ -21,6 +22,8 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+const { t } = useI18n()
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
@@ -35,10 +38,10 @@ const pills = computed(() => {
     }
   }
   return [
-    { status: '', label: 'All', count: props.items.length },
-    { status: 'running', label: 'Running', count: counts.running },
-    { status: 'error', label: 'Error', count: counts.error },
-    { status: 'waiting', label: 'Waiting', count: counts.waiting },
+    { status: '', label: t('common.all'), count: props.items.length },
+    { status: 'running', label: t('status.running'), count: counts.running },
+    { status: 'error', label: t('status.error'), count: counts.error },
+    { status: 'waiting', label: t('status.waiting'), count: counts.waiting },
   ]
 })
 </script>

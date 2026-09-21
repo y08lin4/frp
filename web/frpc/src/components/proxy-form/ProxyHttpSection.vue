@@ -1,10 +1,10 @@
 <template>
-  <ConfigSection title="HTTP Options" collapsible :readonly="readonly"
+  <ConfigSection :title="$t('proxyForm.httpOptions')" collapsible :readonly="readonly"
     :has-value="form.locations.length > 0 || !!form.hostHeaderRewrite || form.requestHeaders.length > 0 || form.responseHeaders.length > 0">
-    <ConfigField label="Locations" type="tags" v-model="form.locations" placeholder="/path" :readonly="readonly" />
-    <ConfigField label="Host Header Rewrite" type="text" v-model="form.hostHeaderRewrite" :readonly="readonly" />
-    <ConfigField label="Request Headers" type="kv" v-model="form.requestHeaders" key-placeholder="Header" value-placeholder="Value" :readonly="readonly" />
-    <ConfigField label="Response Headers" type="kv" v-model="form.responseHeaders" key-placeholder="Header" value-placeholder="Value" :readonly="readonly" />
+    <ConfigField :label="$t('proxyForm.locations')" type="tags" v-model="form.locations" placeholder="/path" :readonly="readonly" />
+    <ConfigField :label="$t('proxyForm.hostHeaderRewrite')" type="text" v-model="form.hostHeaderRewrite" :readonly="readonly" />
+    <ConfigField :label="$t('proxyForm.requestHeaders')" type="kv" v-model="form.requestHeaders" :key-placeholder="$t('proxyForm.headerPlaceholder')" :value-placeholder="$t('proxyForm.valuePlaceholder')" :readonly="readonly" />
+    <ConfigField :label="$t('proxyForm.responseHeaders')" type="kv" v-model="form.responseHeaders" :key-placeholder="$t('proxyForm.headerPlaceholder')" :value-placeholder="$t('proxyForm.valuePlaceholder')" :readonly="readonly" />
   </ConfigSection>
 </template>
 

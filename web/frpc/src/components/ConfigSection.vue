@@ -10,7 +10,7 @@
         <h3 class="section-title">{{ title }}</h3>
         <div class="section-header-right">
           <span v-if="readonly && !hasValue" class="not-configured-badge">
-            Not configured
+            {{ $t('common.notConfigured') }}
           </span>
           <el-icon v-if="canToggle" class="collapse-arrow" :class="{ expanded }">
             <ArrowDown />

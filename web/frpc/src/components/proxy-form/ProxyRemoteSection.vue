@@ -1,18 +1,18 @@
 <template>
   <template v-if="['tcp', 'udp'].includes(form.type)">
     <div class="field-row two-col">
-      <ConfigField label="Remote Port" type="number" v-model="form.remotePort"
-        :min="0" :max="65535" prop="remotePort" tip="Use 0 for random port assignment" :readonly="readonly" />
+      <ConfigField :label="$t('proxyForm.remotePort')" type="number" v-model="form.remotePort"
+        :min="0" :max="65535" prop="remotePort" :tip="$t('proxyForm.remotePortTip')" :readonly="readonly" />
       <div></div>
     </div>
   </template>
   <template v-if="['http', 'https', 'tcpmux'].includes(form.type)">
     <div class="field-row two-col">
-      <ConfigField label="Custom Domains" type="tags" v-model="form.customDomains"
+      <ConfigField :label="$t('proxyForm.customDomains')" type="tags" v-model="form.customDomains"
         prop="customDomains" placeholder="example.com" :readonly="readonly" />
-      <ConfigField v-if="form.type !== 'tcpmux'" label="Subdomain" type="text"
+      <ConfigField v-if="form.type !== 'tcpmux'" :label="$t('proxyForm.subdomain')" type="text"
         v-model="form.subdomain" placeholder="test" :readonly="readonly" />
-      <ConfigField v-if="form.type === 'tcpmux'" label="Multiplexer" type="select"
+      <ConfigField v-if="form.type === 'tcpmux'" :label="$t('proxyForm.multiplexer')" type="select"
         v-model="form.multiplexer" :options="[{ label: 'HTTP CONNECT', value: 'httpconnect' }]" :readonly="readonly" />
     </div>
   </template>

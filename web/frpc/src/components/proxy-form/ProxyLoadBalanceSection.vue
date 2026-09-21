@@ -1,8 +1,8 @@
 <template>
-  <ConfigSection title="Load Balancer" collapsible :readonly="readonly" :has-value="!!form.loadBalancerGroup">
+  <ConfigSection :title="$t('proxyForm.loadBalancer')" collapsible :readonly="readonly" :has-value="!!form.loadBalancerGroup">
     <div class="field-row two-col">
-      <ConfigField label="Group" type="text" v-model="form.loadBalancerGroup" placeholder="Group name" :readonly="readonly" />
-      <ConfigField label="Group Key" type="text" v-model="form.loadBalancerGroupKey" :readonly="readonly" />
+      <ConfigField :label="$t('proxyForm.group')" type="text" v-model="form.loadBalancerGroup" :placeholder="$t('proxyForm.groupPlaceholder')" :readonly="readonly" />
+      <ConfigField :label="$t('proxyForm.groupKey')" type="text" v-model="form.loadBalancerGroupKey" :readonly="readonly" />
     </div>
   </ConfigSection>
 </template>

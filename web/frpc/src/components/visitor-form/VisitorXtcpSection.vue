@@ -1,25 +1,25 @@
 <template>
   <!-- XTCP Options -->
-  <ConfigSection title="XTCP Options" collapsible :readonly="readonly"
+  <ConfigSection :title="$t('visitorForm.xtcpOptions')" collapsible :readonly="readonly"
     :has-value="form.protocol !== 'quic' || form.keepTunnelOpen || form.maxRetriesAnHour != null || form.minRetryInterval != null || !!form.fallbackTo || form.fallbackTimeoutMs != null">
-    <ConfigField label="Protocol" type="select" v-model="form.protocol"
+    <ConfigField :label="$t('visitorForm.protocol')" type="select" v-model="form.protocol"
       :options="[{ label: 'QUIC', value: 'quic' }, { label: 'KCP', value: 'kcp' }]" :readonly="readonly" />
-    <ConfigField label="Keep Tunnel Open" type="switch" v-model="form.keepTunnelOpen" :readonly="readonly" />
+    <ConfigField :label="$t('visitorForm.keepTunnelOpen')" type="switch" v-model="form.keepTunnelOpen" :readonly="readonly" />
     <div class="field-row two-col">
-      <ConfigField label="Max Retries per Hour" type="number" v-model="form.maxRetriesAnHour" :min="0" :readonly="readonly" />
-      <ConfigField label="Min Retry Interval (s)" type="number" v-model="form.minRetryInterval" :min="0" :readonly="readonly" />
+      <ConfigField :label="$t('visitorForm.maxRetriesPerHour')" type="number" v-model="form.maxRetriesAnHour" :min="0" :readonly="readonly" />
+      <ConfigField :label="$t('visitorForm.minRetryInterval')" type="number" v-model="form.minRetryInterval" :min="0" :readonly="readonly" />
     </div>
     <div class="field-row two-col">
-      <ConfigField label="Fallback To" type="text" v-model="form.fallbackTo" placeholder="Fallback visitor name" :readonly="readonly" />
-      <ConfigField label="Fallback Timeout (ms)" type="number" v-model="form.fallbackTimeoutMs" :min="0" :readonly="readonly" />
+      <ConfigField :label="$t('visitorForm.fallbackTo')" type="text" v-model="form.fallbackTo" :placeholder="$t('visitorForm.fallbackToPlaceholder')" :readonly="readonly" />
+      <ConfigField :label="$t('visitorForm.fallbackTimeout')" type="number" v-model="form.fallbackTimeoutMs" :min="0" :readonly="readonly" />
     </div>
   </ConfigSection>
 
   <!-- NAT Traversal -->
-  <ConfigSection title="NAT Traversal" collapsible :readonly="readonly"
+  <ConfigSection :title="$t('visitorForm.natTraversal')" collapsible :readonly="readonly"
     :has-value="form.natTraversalDisableAssistedAddrs">
-    <ConfigField label="Disable Assisted Addresses" type="switch" v-model="form.natTraversalDisableAssistedAddrs"
-      tip="Only use STUN-discovered public addresses" :readonly="readonly" />
+    <ConfigField :label="$t('visitorForm.disableAssistedAddrs')" type="switch" v-model="form.natTraversalDisableAssistedAddrs"
+      :tip="$t('visitorForm.disableAssistedAddrsTip')" :readonly="readonly" />
   </ConfigSection>
 </template>
 

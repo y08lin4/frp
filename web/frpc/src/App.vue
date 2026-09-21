@@ -1,4 +1,5 @@
 <template>
+  <el-config-provider :locale="elLocale">
   <div id="app">
     <header class="header">
       <div class="header-content">
@@ -11,10 +12,11 @@
           </div>
           <span class="divider">/</span>
           <span class="brand-name">frp</span>
-          <span class="badge">Client</span>
+          <span class="badge">{{ $t('header.client') }}</span>
         </div>
 
         <div class="header-controls">
+          <LangSwitch />
           <a
             class="github-link"
             href="https://github.com/fatedier/frp"
@@ -50,7 +52,7 @@
             :class="{ active: route.path.startsWith('/proxies') }"
             @click="closeSidebar"
           >
-            Proxies
+            {{ $t('nav.proxies') }}
           </router-link>
           <router-link
             to="/visitors"
@@ -58,7 +60,7 @@
             :class="{ active: route.path.startsWith('/visitors') }"
             @click="closeSidebar"
           >
-            Visitors
+            {{ $t('nav.visitors') }}
           </router-link>
           <router-link
             to="/config"
@@ -66,7 +68,7 @@
             :class="{ active: route.path === '/config' }"
             @click="closeSidebar"
           >
-            Config
+            {{ $t('nav.config') }}
           </router-link>
         </nav>
       </aside>
@@ -76,20 +78,52 @@
       </main>
     </div>
   </div>
+  </el-config-provider>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useDark } from '@vueuse/core'
 import { Moon, Sunny } from '@element-plus/icons-vue'
+import enLocale from 'element-plus/es/locale/lang/en'
+import zhCnLocale from 'element-plus/es/locale/lang/zh-cn'
+import zhTwLocale from 'element-plus/es/locale/lang/zh-tw'
+import jaLocale from 'element-plus/es/locale/lang/ja'
+import koLocale from 'element-plus/es/locale/lang/ko'
+import esLocale from 'element-plus/es/locale/lang/es'
+import deLocale from 'element-plus/es/locale/lang/de'
+import frLocale from 'element-plus/es/locale/lang/fr'
+import ruLocale from 'element-plus/es/locale/lang/ru'
+import ptBrLocale from 'element-plus/es/locale/lang/pt-br'
+import viLocale from 'element-plus/es/locale/lang/vi'
 import GitHubIcon from './assets/icons/github.svg?component'
 import LogoIcon from './assets/icons/logo.svg?component'
+import LangSwitch from './components/LangSwitch.vue'
 import { useResponsive } from './composables/useResponsive'
+import type { Locale } from './i18n'
 
 const route = useRoute()
+const { locale } = useI18n()
 const isDark = useDark()
 const { isMobile } = useResponsive()
+
+const EL_LOCALES: Record<Locale, (typeof enLocale)> = {
+  en: enLocale,
+  'zh-CN': zhCnLocale,
+  'zh-TW': zhTwLocale,
+  ja: jaLocale,
+  ko: koLocale,
+  es: esLocale,
+  de: deLocale,
+  fr: frLocale,
+  ru: ruLocale,
+  'pt-BR': ptBrLocale,
+  vi: viLocale,
+}
+
+const elLocale = computed(() => EL_LOCALES[locale.value as Locale] ?? enLocale)
 
 const sidebarOpen = ref(false)
 

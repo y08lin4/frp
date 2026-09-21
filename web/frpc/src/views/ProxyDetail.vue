@@ -3,7 +3,7 @@
     <!-- Fixed Header -->
     <div class="detail-top">
       <nav class="breadcrumb">
-        <router-link :to="isStore ? '/proxies?tab=store' : '/proxies'" class="breadcrumb-link">Proxies</router-link>
+        <router-link :to="isStore ? '/proxies?tab=store' : '/proxies'" class="breadcrumb-link">{{ $t('proxies.title') }}</router-link>
         <span class="breadcrumb-sep">&rsaquo;</span>
         <span class="breadcrumb-current">{{ proxyName }}</span>
       </nav>
@@ -15,17 +15,17 @@
               <h2 class="detail-title">{{ proxy.name }}</h2>
               <span class="status-pill" :class="statusClass">
                 <span class="status-dot"></span>
-                {{ proxy.status }}
+                {{ statusLabel }}
               </span>
             </div>
             <p class="header-subtitle">
-              Source: {{ displaySource }} &middot; Type:
+              {{ $t('proxies.source') }}: {{ displaySource }} &middot; {{ $t('common.type') }}:
               {{ proxy.type.toUpperCase() }}
             </p>
           </div>
           <div v-if="isStore" class="header-actions">
             <ActionButton variant="outline" size="small" @click="handleEdit">
-              Edit
+              {{ $t('common.edit') }}
             </ActionButton>
           </div>
         </div>
@@ -34,10 +34,10 @@
 
     <!-- Scrollable Content -->
     <div v-if="notFound" class="not-found">
-      <p class="empty-text">Proxy not found</p>
-      <p class="empty-hint">The proxy "{{ proxyName }}" does not exist.</p>
+      <p class="empty-text">{{ $t('proxyDetail.notFound') }}</p>
+      <p class="empty-hint">{{ proxyName }}</p>
       <ActionButton variant="outline" @click="router.push('/proxies')">
-        Back to Proxies
+        {{ $t('proxies.title') }}
       </ActionButton>
     </div>
 
@@ -46,7 +46,7 @@
       <div v-if="proxy.err" class="error-banner">
         <el-icon class="error-icon"><Warning /></el-icon>
         <div>
-          <div class="error-title">Connection Error</div>
+          <div class="error-title">{{ $t('proxyDetail.connectionError') }}</div>
           <div class="error-message">{{ proxy.err }}</div>
         </div>
       </div>
@@ -67,6 +67,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Warning } from '@element-plus/icons-vue'
 import ActionButton from '@shared/components/ActionButton.vue'
@@ -76,6 +77,7 @@ import { useProxyStore } from '../stores/proxy'
 import { storeProxyToForm } from '../types'
 import type { ProxyStatus, ProxyDefinition, ProxyFormData } from '../types'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const proxyStore = useProxyStore()
@@ -86,6 +88,15 @@ const proxyConfig = ref<ProxyDefinition | null>(null)
 const loading = ref(true)
 const notFound = ref(false)
 const isStore = ref(false)
+
+const statusLabel = computed(() => {
+  const s = proxy.value?.status
+  if (s === 'running') return t('status.running')
+  if (s === 'error') return t('status.error')
+  if (s === 'waiting') return t('status.waiting')
+  if (s === 'disabled') return t('status.disabled')
+  return s ?? ''
+})
 
 onMounted(async () => {
   try {
@@ -131,7 +142,7 @@ onMounted(async () => {
       notFound.value = true
     }
   } catch (err: any) {
-    ElMessage.error('Failed to load proxy: ' + err.message)
+    ElMessage.error(t('proxyDetail.loadFailed', { msg: err.message }))
   } finally {
     loading.value = false
   }

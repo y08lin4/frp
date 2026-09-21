@@ -2,7 +2,7 @@
   <div class="configure-page">
     <div class="page-header">
       <div class="title-section">
-        <h1 class="page-title">Config</h1>
+        <h1 class="page-title">{{ $t('config.title') }}</h1>
       </div>
     </div>
 
@@ -14,11 +14,11 @@
           class="docs-link"
         >
           <el-icon><Link /></el-icon>
-          Documentation
+          {{ $t('config.documentation') }}
         </a>
       </div>
       <div class="header-actions">
-        <ActionButton @click="handleUpload">Update & Reload</ActionButton>
+        <ActionButton @click="handleUpload">{{ $t('config.updateAndReload') }}</ActionButton>
       </div>
     </div>
 
@@ -27,19 +27,16 @@
         type="textarea"
         :autosize="false"
         v-model="configContent"
-        placeholder="# frpc configuration file content...
-
-serverAddr = &quot;127.0.0.1&quot;
-serverPort = 7000"
+        :placeholder="$t('config.editorPlaceholder')"
         class="code-editor"
       ></el-input>
     </div>
 
     <ConfirmDialog
       v-model="confirmVisible"
-      title="Confirm Update"
-      message="This operation will update your frpc configuration and reload it. Do you want to continue?"
-      confirm-text="Update"
+      :title="$t('config.confirmTitle')"
+      :message="$t('config.confirmMessage')"
+      :confirm-text="$t('config.confirmUpdate')"
       :loading="uploading"
       :is-mobile="isMobile"
       @confirm="doUpload"
@@ -49,6 +46,7 @@ serverPort = 7000"
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Link } from '@element-plus/icons-vue'
 import { useClientStore } from '../stores/client'
@@ -56,6 +54,7 @@ import ActionButton from '@shared/components/ActionButton.vue'
 import ConfirmDialog from '@shared/components/ConfirmDialog.vue'
 import { useResponsive } from '../composables/useResponsive'
 
+const { t } = useI18n()
 const { isMobile } = useResponsive()
 const clientStore = useClientStore()
 const configContent = ref('')
@@ -67,7 +66,7 @@ const fetchData = async () => {
   } catch (err: any) {
     ElMessage({
       showClose: true,
-      message: 'Get configuration failed: ' + err.message,
+      message: t('config.getFailed', { msg: err.message }),
       type: 'warning',
     })
   }
@@ -82,7 +81,7 @@ const handleUpload = () => {
 
 const doUpload = async () => {
   if (!configContent.value.trim()) {
-    ElMessage.warning('Configuration content cannot be empty!')
+    ElMessage.warning(t('config.emptyWarning'))
     return
   }
 
@@ -90,10 +89,10 @@ const doUpload = async () => {
   try {
     await clientStore.saveConfig(configContent.value)
     await clientStore.reload()
-    ElMessage.success('Configuration updated and reloaded successfully')
+    ElMessage.success(t('config.updateSuccess'))
     confirmVisible.value = false
   } catch (err: any) {
-    ElMessage.error('Update failed: ' + err.message)
+    ElMessage.error(t('config.updateFailed', { msg: err.message }))
   } finally {
     uploading.value = false
   }

@@ -11,13 +11,13 @@
       <div v-for="(entry, index) in modelValue" :key="index" class="kv-row">
         <el-input
           :model-value="entry.key"
-          :placeholder="keyPlaceholder"
+          :placeholder="resolvedKeyPlaceholder()"
           class="kv-input"
           @update:model-value="updateEntry(index, 'key', $event)"
         />
         <el-input
           :model-value="entry.value"
-          :placeholder="valuePlaceholder"
+          :placeholder="resolvedValuePlaceholder()"
           class="kv-input"
           @update:model-value="updateEntry(index, 'value', $event)"
         />
@@ -43,13 +43,15 @@
             fill="currentColor"
           />
         </svg>
-        Add
+        {{ $t('common.add') }}
       </button>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 interface KVEntry {
   key: string
   value: string
@@ -63,10 +65,18 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  keyPlaceholder: 'Key',
-  valuePlaceholder: 'Value',
+  keyPlaceholder: undefined,
+  valuePlaceholder: undefined,
   readonly: false,
 })
+
+const { t, te } = useI18n()
+
+// Resolve placeholder: explicit prop wins, otherwise localized default.
+const resolvedKeyPlaceholder = () =>
+  props.keyPlaceholder ?? (te('common.key') ? t('common.key') : 'Key')
+const resolvedValuePlaceholder = () =>
+  props.valuePlaceholder ?? (te('common.value') ? t('common.value') : 'Value')
 
 const emit = defineEmits<{
   'update:modelValue': [value: KVEntry[]]

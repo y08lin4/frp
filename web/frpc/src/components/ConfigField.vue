@@ -37,7 +37,7 @@
       selectable
       full-width
       filterable
-      :filter-placeholder="placeholder || 'Select...'"
+      :filter-placeholder="placeholder || t('common.selectPlaceholder')"
       @update:model-value="$emit('update:modelValue', $event)"
     >
       <template #default="{ filterText }">
@@ -64,15 +64,15 @@
     <KeyValueEditor
       v-else-if="type === 'kv'"
       :model-value="modelValue"
-      :key-placeholder="keyPlaceholder"
-      :value-placeholder="valuePlaceholder"
+      :key-placeholder="keyPlaceholder ?? t('common.key')"
+      :value-placeholder="valuePlaceholder ?? t('common.value')"
       @update:model-value="$emit('update:modelValue', $event)"
     />
     <!-- tags (string array) -->
     <StringListEditor
       v-else-if="type === 'tags'"
       :model-value="modelValue || []"
-      :placeholder="placeholder"
+      :placeholder="placeholder || t('common.selectPlaceholder')"
       @update:model-value="$emit('update:modelValue', $event)"
     />
     <div v-if="tip && type !== 'switch'" class="config-field-tip">{{ tip }}</div>
@@ -92,8 +92,8 @@
     <KeyValueEditor
       v-else-if="type === 'kv'"
       :model-value="modelValue || []"
-      :key-placeholder="keyPlaceholder"
-      :value-placeholder="valuePlaceholder"
+      :key-placeholder="keyPlaceholder ?? t('common.key')"
+      :value-placeholder="valuePlaceholder ?? t('common.value')"
       readonly
     />
     <!-- tags readonly -->
@@ -113,10 +113,13 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import KeyValueEditor from './KeyValueEditor.vue'
 import StringListEditor from './StringListEditor.vue'
 import PopoverMenu from '@shared/components/PopoverMenu.vue'
 import PopoverMenuItem from '@shared/components/PopoverMenuItem.vue'
+
+const { t } = useI18n()
 
 const props = withDefaults(
   defineProps<{
@@ -145,8 +148,8 @@ const props = withDefaults(
     options: () => [],
     min: undefined,
     max: undefined,
-    keyPlaceholder: 'Key',
-    valuePlaceholder: 'Value',
+    keyPlaceholder: undefined,
+    valuePlaceholder: undefined,
   },
 )
 

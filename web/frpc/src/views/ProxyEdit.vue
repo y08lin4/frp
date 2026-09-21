@@ -3,14 +3,14 @@
     <!-- Header with breadcrumb and actions -->
     <div class="edit-header">
       <nav class="breadcrumb">
-        <router-link to="/proxies?tab=store" class="breadcrumb-item">Proxies</router-link>
+        <router-link to="/proxies?tab=store" class="breadcrumb-item">{{ $t('proxies.title') }}</router-link>
         <span class="breadcrumb-separator">&rsaquo;</span>
-        <span class="breadcrumb-current">{{ isEditing ? 'Edit Proxy' : 'New Proxy' }}</span>
+        <span class="breadcrumb-current">{{ isEditing ? $t('proxyEdit.editProxy') : $t('proxyEdit.newProxy') }}</span>
       </nav>
       <div class="header-actions">
-        <ActionButton variant="outline" size="small" @click="goBack">Cancel</ActionButton>
+        <ActionButton variant="outline" size="small" @click="goBack">{{ $t('common.cancel') }}</ActionButton>
         <ActionButton size="small" :loading="saving" @click="handleSave">
-          {{ isEditing ? 'Update' : 'Create' }}
+          {{ isEditing ? $t('common.update') : $t('common.create') }}
         </ActionButton>
       </div>
     </div>
@@ -29,8 +29,9 @@
 
     <ConfirmDialog
       v-model="leaveDialogVisible"
-      title="Unsaved Changes"
-      message="You have unsaved changes. Are you sure you want to leave?"
+      :title="$t('proxyEdit.unsavedTitle')"
+      :message="$t('proxyEdit.unsavedMessage')"
+      :confirm-text="$t('proxyEdit.leave')"
       :is-mobile="isMobile"
       @confirm="handleLeaveConfirm"
       @cancel="handleLeaveCancel"
@@ -41,6 +42,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import {
@@ -56,6 +58,7 @@ import ConfirmDialog from '@shared/components/ConfirmDialog.vue'
 import ProxyFormLayout from '../components/proxy-form/ProxyFormLayout.vue'
 import { useResponsive } from '../composables/useResponsive'
 
+const { t } = useI18n()
 const { isMobile } = useResponsive()
 const route = useRoute()
 const router = useRouter()
@@ -70,17 +73,17 @@ const dirty = ref(false)
 const formSaved = ref(false)
 const trackChanges = ref(false)
 
-const rules: FormRules = {
+const rules = computed<FormRules>(() => ({
   name: [
-    { required: true, message: 'Name is required', trigger: 'blur' },
-    { min: 1, max: 50, message: 'Length should be 1 to 50', trigger: 'blur' },
+    { required: true, message: t('proxyEdit.nameRequired'), trigger: 'blur' },
+    { min: 1, max: 50, message: t('proxyEdit.nameLength'), trigger: 'blur' },
   ],
-  type: [{ required: true, message: 'Type is required', trigger: 'change' }],
+  type: [{ required: true, message: t('proxyEdit.typeRequired'), trigger: 'change' }],
   localPort: [
     {
       validator: (_rule, value, callback) => {
         if (!form.value.pluginType && value == null) {
-          callback(new Error('Local port is required'))
+          callback(new Error(t('proxyEdit.localPortRequired')))
         } else {
           callback()
         }
@@ -96,7 +99,7 @@ const rules: FormRules = {
           (!value || value.length === 0) &&
           !form.value.subdomain
         ) {
-          callback(new Error('Custom domains or subdomain is required'))
+          callback(new Error(t('proxyEdit.domainsRequired')))
         } else {
           callback()
         }
@@ -108,7 +111,7 @@ const rules: FormRules = {
     {
       validator: (_rule, value, callback) => {
         if (form.value.healthCheckType === 'http' && !value) {
-          callback(new Error('Path is required for HTTP health check'))
+          callback(new Error(t('proxyEdit.healthPathRequired')))
         } else {
           callback()
         }
@@ -116,7 +119,7 @@ const rules: FormRules = {
       trigger: 'blur',
     },
   ],
-}
+}))
 
 const goBack = () => {
   router.back()
@@ -166,7 +169,7 @@ const loadProxy = async () => {
     form.value = storeProxyToForm(res)
     await nextTick()
   } catch (err: any) {
-    ElMessage.error('Failed to load proxy: ' + err.message)
+    ElMessage.error(t('proxyDetail.loadFailed', { msg: err.message }))
     router.push('/proxies?tab=store')
   } finally {
     pageLoading.value = false
@@ -182,7 +185,7 @@ const handleSave = async () => {
   try {
     await formRef.value.validate()
   } catch {
-    ElMessage.warning('Please fix the form errors')
+    ElMessage.warning(t('proxyEdit.fixErrors'))
     return
   }
 
@@ -191,15 +194,15 @@ const handleSave = async () => {
     const data = formToStoreProxy(form.value)
     if (isEditing.value) {
       await proxyStore.updateProxy(form.value.name, data)
-      ElMessage.success('Proxy updated')
+      ElMessage.success(t('proxyEdit.updated'))
     } else {
       await proxyStore.createProxy(data)
-      ElMessage.success('Proxy created')
+      ElMessage.success(t('proxyEdit.created'))
     }
     formSaved.value = true
     router.push('/proxies?tab=store')
   } catch (err: any) {
-    ElMessage.error('Operation failed: ' + (err.message || 'Unknown error'))
+    ElMessage.error(t('common.operationFailed', { msg: err.message || t('common.unknownError') }))
   } finally {
     saving.value = false
   }

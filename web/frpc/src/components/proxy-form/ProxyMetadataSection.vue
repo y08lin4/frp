@@ -1,7 +1,7 @@
 <template>
-  <ConfigSection title="Metadata" collapsible :readonly="readonly" :has-value="form.metadatas.length > 0 || form.annotations.length > 0">
-    <ConfigField label="Metadatas" type="kv" v-model="form.metadatas" :readonly="readonly" />
-    <ConfigField label="Annotations" type="kv" v-model="form.annotations" :readonly="readonly" />
+  <ConfigSection :title="$t('proxyForm.metadata')" collapsible :readonly="readonly" :has-value="form.metadatas.length > 0 || form.annotations.length > 0">
+    <ConfigField :label="$t('proxyForm.metadatas')" type="kv" v-model="form.metadatas" :readonly="readonly" />
+    <ConfigField :label="$t('proxyForm.annotations')" type="kv" v-model="form.annotations" :readonly="readonly" />
   </ConfigSection>
 </template>
 

@@ -10,7 +10,7 @@
       <div v-for="(item, index) in modelValue" :key="index" class="item-row">
         <el-input
           :model-value="item"
-          :placeholder="placeholder"
+          :placeholder="resolvedPlaceholder"
           @update:model-value="updateItem(index, $event)"
         />
         <button class="item-remove" @click="removeItem(index)">
@@ -23,13 +23,16 @@
         <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M8 2a.5.5 0 01.5.5v5h5a.5.5 0 010 1h-5v5a.5.5 0 01-1 0v-5h-5a.5.5 0 010-1h5v-5A.5.5 0 018 2z" fill="currentColor"/>
         </svg>
-        Add
+        {{ $t('common.add') }}
       </button>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
 const props = withDefaults(
   defineProps<{
     modelValue: string[]
@@ -37,10 +40,14 @@ const props = withDefaults(
     readonly?: boolean
   }>(),
   {
-    placeholder: 'Enter value',
+    placeholder: undefined,
     readonly: false,
   },
 )
+
+const { t } = useI18n()
+
+const resolvedPlaceholder = computed(() => props.placeholder ?? t('common.selectPlaceholder'))
 
 const emit = defineEmits<{
   'update:modelValue': [value: string[]]
