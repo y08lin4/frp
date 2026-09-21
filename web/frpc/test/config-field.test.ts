@@ -1,7 +1,16 @@
 import { defineComponent } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createI18n } from 'vue-i18n'
 import ConfigField from '../src/components/ConfigField.vue'
+import en from '../src/i18n/locales/en'
+
+const i18n = createI18n({
+  legacy: false,
+  locale: 'en',
+  fallbackLocale: 'en',
+  messages: { en },
+})
 
 const InputStub = defineComponent({
   props: ['modelValue', 'disabled', 'placeholder', 'type'],
@@ -28,11 +37,13 @@ const stubs = {
   PopoverMenuItem: defineComponent({ template: '<div><slot /></div>' }),
 }
 
+const global = { stubs, plugins: [i18n] }
+
 describe('ConfigField', () => {
   it('clamps numeric input and emits the public model update', async () => {
     const wrapper = mount(ConfigField, {
       props: { label: 'Port', type: 'number', modelValue: 100, min: 1, max: 65535 },
-      global: { stubs },
+      global,
     })
 
     const input = wrapper.find('input')
@@ -45,7 +56,7 @@ describe('ConfigField', () => {
   it('keeps a leading sign as an editable draft until it becomes numeric', async () => {
     const wrapper = mount(ConfigField, {
       props: { label: 'Port', type: 'number', modelValue: 100 },
-      global: { stubs },
+      global,
     })
 
     const input = wrapper.find('input')
@@ -62,7 +73,7 @@ describe('ConfigField', () => {
   it('renders an empty readonly field as a disabled placeholder', () => {
     const wrapper = mount(ConfigField, {
       props: { label: 'Secret', readonly: true, modelValue: '' },
-      global: { stubs },
+      global,
     })
 
     const input = wrapper.find('input').element as HTMLInputElement
@@ -71,3 +82,4 @@ describe('ConfigField', () => {
     expect(input.value).toBe('—')
   })
 })
+

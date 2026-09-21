@@ -1,10 +1,10 @@
 <template>
   <!-- Backend Mode -->
   <template v-if="!readonly">
-    <el-form-item label="Backend Mode">
+    <el-form-item :label="$t('proxyForm.backendMode')">
       <el-radio-group v-model="backendMode">
-        <el-radio value="direct">Direct</el-radio>
-        <el-radio value="plugin">Plugin</el-radio>
+        <el-radio value="direct">{{ $t('proxyForm.direct') }}</el-radio>
+        <el-radio value="plugin">{{ $t('proxyForm.plugin') }}</el-radio>
       </el-radio-group>
     </el-form-item>
   </template>
@@ -12,64 +12,64 @@
   <!-- Direct mode -->
   <template v-if="backendMode === 'direct'">
     <div class="field-row two-col">
-      <ConfigField label="Local IP" type="text" v-model="form.localIP" placeholder="127.0.0.1" :readonly="readonly" />
-      <ConfigField label="Local Port" type="number" v-model="form.localPort" :min="0" :max="65535" prop="localPort" :readonly="readonly" />
+      <ConfigField :label="$t('proxyForm.localIP')" type="text" v-model="form.localIP" placeholder="127.0.0.1" :readonly="readonly" />
+      <ConfigField :label="$t('proxyForm.localPort')" type="number" v-model="form.localPort" :min="0" :max="65535" prop="localPort" :readonly="readonly" />
     </div>
   </template>
 
   <!-- Plugin mode -->
   <template v-else>
     <div class="field-row two-col">
-      <ConfigField label="Plugin Type" type="select" v-model="form.pluginType"
+      <ConfigField :label="$t('proxyForm.pluginType')" type="select" v-model="form.pluginType"
         :options="PLUGIN_LIST.map((p) => ({ label: p, value: p }))" :readonly="readonly" />
       <div></div>
     </div>
 
     <template v-if="['http2https', 'https2http', 'https2https', 'http2http', 'tls2raw'].includes(form.pluginType)">
       <div class="field-row two-col">
-        <ConfigField label="Local Address" type="text" v-model="form.pluginConfig.localAddr" placeholder="127.0.0.1:8080" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.localAddress')" type="text" v-model="form.pluginConfig.localAddr" placeholder="127.0.0.1:8080" :readonly="readonly" />
         <ConfigField v-if="['http2https', 'https2http', 'https2https', 'http2http'].includes(form.pluginType)"
-          label="Host Header Rewrite" type="text" v-model="form.pluginConfig.hostHeaderRewrite" :readonly="readonly" />
+          :label="$t('proxyForm.hostHeaderRewrite')" type="text" v-model="form.pluginConfig.hostHeaderRewrite" :readonly="readonly" />
         <div v-else></div>
       </div>
     </template>
     <template v-if="['http2https', 'https2http', 'https2https', 'http2http'].includes(form.pluginType)">
-      <ConfigField label="Request Headers" type="kv" v-model="pluginRequestHeaders"
-        key-placeholder="Header" value-placeholder="Value" :readonly="readonly" />
+      <ConfigField :label="$t('proxyForm.requestHeaders')" type="kv" v-model="pluginRequestHeaders"
+        :key-placeholder="$t('proxyForm.headerPlaceholder')" :value-placeholder="$t('proxyForm.valuePlaceholder')" :readonly="readonly" />
     </template>
     <template v-if="['https2http', 'https2https', 'tls2raw'].includes(form.pluginType)">
       <div class="field-row two-col">
-        <ConfigField label="Certificate Path" type="text" v-model="form.pluginConfig.crtPath" placeholder="/path/to/cert.pem" :readonly="readonly" />
-        <ConfigField label="Key Path" type="text" v-model="form.pluginConfig.keyPath" placeholder="/path/to/key.pem" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.certificatePath')" type="text" v-model="form.pluginConfig.crtPath" placeholder="/path/to/cert.pem" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.keyPath')" type="text" v-model="form.pluginConfig.keyPath" placeholder="/path/to/key.pem" :readonly="readonly" />
       </div>
     </template>
     <template v-if="['https2http', 'https2https'].includes(form.pluginType)">
-      <ConfigField label="Enable HTTP/2" type="switch" v-model="form.pluginConfig.enableHTTP2" :readonly="readonly" />
+      <ConfigField :label="$t('proxyForm.enableHttp2')" type="switch" v-model="form.pluginConfig.enableHTTP2" :readonly="readonly" />
     </template>
     <template v-if="form.pluginType === 'http_proxy'">
       <div class="field-row two-col">
-        <ConfigField label="HTTP User" type="text" v-model="form.pluginConfig.httpUser" :readonly="readonly" />
-        <ConfigField label="HTTP Password" type="password" v-model="form.pluginConfig.httpPassword" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.httpUser')" type="text" v-model="form.pluginConfig.httpUser" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.httpPassword')" type="password" v-model="form.pluginConfig.httpPassword" :readonly="readonly" />
       </div>
     </template>
     <template v-if="form.pluginType === 'socks5'">
       <div class="field-row two-col">
-        <ConfigField label="Username" type="text" v-model="form.pluginConfig.username" :readonly="readonly" />
-        <ConfigField label="Password" type="password" v-model="form.pluginConfig.password" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.username')" type="text" v-model="form.pluginConfig.username" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.password')" type="password" v-model="form.pluginConfig.password" :readonly="readonly" />
       </div>
     </template>
     <template v-if="form.pluginType === 'static_file'">
       <div class="field-row two-col">
-        <ConfigField label="Local Path" type="text" v-model="form.pluginConfig.localPath" placeholder="/path/to/files" :readonly="readonly" />
-        <ConfigField label="Strip Prefix" type="text" v-model="form.pluginConfig.stripPrefix" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.localPath')" type="text" v-model="form.pluginConfig.localPath" placeholder="/path/to/files" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.stripPrefix')" type="text" v-model="form.pluginConfig.stripPrefix" :readonly="readonly" />
       </div>
       <div class="field-row two-col">
-        <ConfigField label="HTTP User" type="text" v-model="form.pluginConfig.httpUser" :readonly="readonly" />
-        <ConfigField label="HTTP Password" type="password" v-model="form.pluginConfig.httpPassword" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.httpUser')" type="text" v-model="form.pluginConfig.httpUser" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.httpPassword')" type="password" v-model="form.pluginConfig.httpPassword" :readonly="readonly" />
       </div>
     </template>
     <template v-if="form.pluginType === 'unix_domain_socket'">
-      <ConfigField label="Unix Socket Path" type="text" v-model="form.pluginConfig.unixPath" placeholder="/tmp/socket.sock" :readonly="readonly" />
+      <ConfigField :label="$t('proxyForm.unixSocketPath')" type="text" v-model="form.pluginConfig.unixPath" placeholder="/tmp/socket.sock" :readonly="readonly" />
     </template>
   </template>
 </template>

@@ -1,19 +1,19 @@
 <template>
-  <ConfigSection title="Health Check" collapsible :readonly="readonly" :has-value="!!form.healthCheckType">
+  <ConfigSection :title="$t('proxyForm.healthCheck')" collapsible :readonly="readonly" :has-value="!!form.healthCheckType">
     <div class="field-row two-col">
-      <ConfigField label="Type" type="select" v-model="form.healthCheckType"
-        :options="[{ label: 'Disabled', value: '' }, { label: 'TCP', value: 'tcp' }, { label: 'HTTP', value: 'http' }]" :readonly="readonly" />
+      <ConfigField :label="$t('common.type')" type="select" v-model="form.healthCheckType"
+        :options="[{ label: $t('status.disabled'), value: '' }, { label: 'TCP', value: 'tcp' }, { label: 'HTTP', value: 'http' }]" :readonly="readonly" />
       <div></div>
     </div>
     <template v-if="form.healthCheckType">
       <div class="field-row three-col">
-        <ConfigField label="Timeout (s)" type="number" v-model="form.healthCheckTimeoutSeconds" :min="1" :readonly="readonly" />
-        <ConfigField label="Max Failed" type="number" v-model="form.healthCheckMaxFailed" :min="1" :readonly="readonly" />
-        <ConfigField label="Interval (s)" type="number" v-model="form.healthCheckIntervalSeconds" :min="1" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.timeoutSeconds')" type="number" v-model="form.healthCheckTimeoutSeconds" :min="1" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.maxFailed')" type="number" v-model="form.healthCheckMaxFailed" :min="1" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.intervalSeconds')" type="number" v-model="form.healthCheckIntervalSeconds" :min="1" :readonly="readonly" />
       </div>
       <template v-if="form.healthCheckType === 'http'">
-        <ConfigField label="Path" type="text" v-model="form.healthCheckPath" prop="healthCheckPath" placeholder="/health" :readonly="readonly" />
-        <ConfigField label="HTTP Headers" type="kv" v-model="healthCheckHeaders" key-placeholder="Header" value-placeholder="Value" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.path')" type="text" v-model="form.healthCheckPath" prop="healthCheckPath" placeholder="/health" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.httpHeaders')" type="kv" v-model="healthCheckHeaders" :key-placeholder="$t('proxyForm.headerPlaceholder')" :value-placeholder="$t('proxyForm.valuePlaceholder')" :readonly="readonly" />
       </template>
     </template>
   </ConfigSection>

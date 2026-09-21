@@ -2,37 +2,37 @@
   <div class="visitors-page">
     <!-- Header -->
     <div class="page-header">
-      <h2 class="page-title">Visitors</h2>
+      <h2 class="page-title">{{ $t('visitors.title') }}</h2>
     </div>
 
     <!-- Tab bar -->
     <div class="tab-bar">
       <div class="tab-buttons">
-        <button class="tab-btn active">Store</button>
+        <button class="tab-btn active">{{ $t('proxies.storeTab') }}</button>
       </div>
       <div class="tab-actions">
         <ActionButton variant="outline" size="small" @click="fetchData">
           <el-icon><Refresh /></el-icon>
         </ActionButton>
         <ActionButton v-if="visitorStore.storeEnabled" size="small" @click="handleCreate">
-          + New Visitor
+          {{ $t('visitors.newVisitor') }}
         </ActionButton>
       </div>
     </div>
 
     <div v-loading="visitorStore.loading">
       <div v-if="!visitorStore.storeEnabled" class="store-disabled">
-        <p>Store is not enabled. Add the following to your frpc configuration:</p>
+        <p>{{ $t('visitors.storeDisabled') }}</p>
         <pre class="config-hint">[store]
 path = "./frpc_store.json"</pre>
       </div>
 
       <template v-else>
         <div class="filter-bar">
-          <el-input v-model="searchText" placeholder="Search..." clearable class="search-input">
+          <el-input v-model="searchText" :placeholder="$t('common.search')" clearable class="search-input">
             <template #prefix><el-icon><Search /></el-icon></template>
           </el-input>
-          <FilterDropdown v-model="typeFilter" label="Type" :options="typeOptions" :min-width="140" :is-mobile="isMobile" />
+          <FilterDropdown v-model="typeFilter" :label="$t('common.type')" :options="typeOptions" :min-width="140" :is-mobile="isMobile" />
         </div>
 
         <div v-if="filteredVisitors.length > 0" class="visitor-list">
@@ -54,11 +54,11 @@ path = "./frpc_store.json"</pre>
                   </template>
                   <PopoverMenuItem @click="handleEdit(v)">
                     <el-icon><Edit /></el-icon>
-                    Edit
+                    {{ $t('common.edit') }}
                   </PopoverMenuItem>
                   <PopoverMenuItem danger @click="handleDelete(v.name)">
                     <el-icon><Delete /></el-icon>
-                    Delete
+                    {{ $t('common.delete') }}
                   </PopoverMenuItem>
                 </PopoverMenu>
               </div>
@@ -66,14 +66,14 @@ path = "./frpc_store.json"</pre>
           </div>
         </div>
         <div v-else class="empty-state">
-          <p class="empty-text">No visitors found</p>
-          <p class="empty-hint">Click "New Visitor" to create one.</p>
+          <p class="empty-text">{{ $t('visitors.noVisitors') }}</p>
+          <p class="empty-hint">{{ $t('visitors.noVisitorsHint') }}</p>
         </div>
       </template>
     </div>
 
-    <ConfirmDialog v-model="deleteDialog.visible" title="Delete Visitor"
-      :message="deleteDialog.message" confirm-text="Delete" danger
+    <ConfirmDialog v-model="deleteDialog.visible" :title="$t('visitors.deleteTitle')"
+      :message="deleteDialog.message" :confirm-text="$t('visitors.deleteConfirm')" danger
       :loading="deleteDialog.loading" :is-mobile="isMobile" @confirm="doDelete" />
   </div>
 </template>
@@ -81,6 +81,7 @@ path = "./frpc_store.json"</pre>
 <script setup lang="ts">
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh, MoreFilled, Edit, Delete } from '@element-plus/icons-vue'
 import ActionButton from '@shared/components/ActionButton.vue'
@@ -92,6 +93,7 @@ import { useVisitorStore } from '../stores/visitor'
 import { useResponsive } from '../composables/useResponsive'
 import type { VisitorDefinition } from '../types'
 
+const { t } = useI18n()
 const { isMobile } = useResponsive()
 const router = useRouter()
 const visitorStore = useVisitorStore()
@@ -152,7 +154,7 @@ const goToDetail = (name: string) => {
 
 const handleDelete = (name: string) => {
   deleteDialog.name = name
-  deleteDialog.message = `Are you sure you want to delete visitor "${name}"? This action cannot be undone.`
+  deleteDialog.message = t('visitors.deleteTitle') + ': "' + name + '"'
   deleteDialog.visible = true
 }
 
@@ -160,11 +162,11 @@ const doDelete = async () => {
   deleteDialog.loading = true
   try {
     await visitorStore.deleteVisitor(deleteDialog.name)
-    ElMessage.success('Visitor deleted')
+    ElMessage.success(t('visitors.deleteSuccess'))
     deleteDialog.visible = false
     fetchData()
   } catch (err: any) {
-    ElMessage.error('Delete failed: ' + (err.message || 'Unknown error'))
+    ElMessage.error(t('visitors.deleteFailed', { msg: err.message || t('common.unknownError') }))
   } finally {
     deleteDialog.loading = false
   }

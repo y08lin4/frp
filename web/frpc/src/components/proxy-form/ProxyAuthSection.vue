@@ -1,16 +1,16 @@
 <template>
-  <ConfigSection title="Authentication" :readonly="readonly">
+  <ConfigSection :title="$t('proxyForm.authentication')" :readonly="readonly">
     <template v-if="['http', 'tcpmux'].includes(form.type)">
       <div class="field-row three-col">
-        <ConfigField label="HTTP User" type="text" v-model="form.httpUser" :readonly="readonly" />
-        <ConfigField label="HTTP Password" type="password" v-model="form.httpPassword" :readonly="readonly" />
-        <ConfigField label="Route By HTTP User" type="text" v-model="form.routeByHTTPUser" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.httpUser')" type="text" v-model="form.httpUser" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.httpPassword')" type="password" v-model="form.httpPassword" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.routeByHttpUser')" type="text" v-model="form.routeByHTTPUser" :readonly="readonly" />
       </div>
     </template>
     <template v-if="['stcp', 'sudp', 'xtcp'].includes(form.type)">
       <div class="field-row two-col">
-        <ConfigField label="Secret Key" type="password" v-model="form.secretKey" prop="secretKey" :readonly="readonly" />
-        <ConfigField label="Allow Users" type="tags" v-model="form.allowUsers" placeholder="username" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.secretKey')" type="password" v-model="form.secretKey" prop="secretKey" :readonly="readonly" />
+        <ConfigField :label="$t('proxyForm.allowUsers')" type="tags" v-model="form.allowUsers" :placeholder="$t('proxyForm.usernamePlaceholder')" :readonly="readonly" />
       </div>
     </template>
   </ConfigSection>

@@ -1,18 +1,18 @@
 <template>
   <div v-if="!readonly" class="field-row three-col">
-    <el-form-item label="Name" prop="name" class="field-grow">
+    <el-form-item :label="$t('common.name')" prop="name" class="field-grow">
       <el-input v-model="form.name" :disabled="editing || readonly" placeholder="my-visitor" />
     </el-form-item>
-    <ConfigField label="Type" type="select" v-model="form.type" :disabled="editing"
+    <ConfigField :label="$t('common.type')" type="select" v-model="form.type" :disabled="editing"
       :options="[{ label: 'STCP', value: 'stcp' }, { label: 'SUDP', value: 'sudp' }, { label: 'XTCP', value: 'xtcp' }]" prop="type" />
-    <el-form-item label="Enabled" class="switch-field">
+    <el-form-item :label="$t('common.enabled')" class="switch-field">
       <el-switch v-model="form.enabled" size="small" />
     </el-form-item>
   </div>
   <div v-else class="field-row three-col">
-    <ConfigField label="Name" type="text" :model-value="form.name" readonly class="field-grow" />
-    <ConfigField label="Type" type="text" :model-value="form.type.toUpperCase()" readonly />
-    <ConfigField label="Enabled" type="switch" :model-value="form.enabled" readonly />
+    <ConfigField :label="$t('common.name')" type="text" :model-value="form.name" readonly class="field-grow" />
+    <ConfigField :label="$t('common.type')" type="text" :model-value="form.type.toUpperCase()" readonly />
+    <ConfigField :label="$t('common.enabled')" type="switch" :model-value="form.enabled" readonly />
   </div>
 </template>
 

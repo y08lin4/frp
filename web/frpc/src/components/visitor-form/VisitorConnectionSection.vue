@@ -1,17 +1,17 @@
 <template>
-  <ConfigSection title="Connection" :readonly="readonly">
+  <ConfigSection :title="$t('visitorForm.connection')" :readonly="readonly">
     <div class="field-row two-col">
-      <ConfigField label="Server Name" type="text" v-model="form.serverName" prop="serverName"
-        placeholder="Name of the proxy to visit" :readonly="readonly" />
-      <ConfigField label="Server User" type="text" v-model="form.serverUser"
-        placeholder="Leave empty for same user" :readonly="readonly" />
+      <ConfigField :label="$t('visitorForm.serverName')" type="text" v-model="form.serverName" prop="serverName"
+        :placeholder="$t('visitorForm.serverNamePlaceholder')" :readonly="readonly" />
+      <ConfigField :label="$t('visitorForm.serverUser')" type="text" v-model="form.serverUser"
+        :placeholder="$t('visitorForm.serverUserPlaceholder')" :readonly="readonly" />
     </div>
-    <ConfigField label="Secret Key" type="password" v-model="form.secretKey"
-      placeholder="Shared secret" :readonly="readonly" />
+    <ConfigField :label="$t('visitorForm.secretKey')" type="password" v-model="form.secretKey"
+      :placeholder="$t('visitorForm.secretKeyPlaceholder')" :readonly="readonly" />
     <div class="field-row two-col">
-      <ConfigField label="Bind Address" type="text" v-model="form.bindAddr"
+      <ConfigField :label="$t('visitorForm.bindAddress')" type="text" v-model="form.bindAddr"
         placeholder="127.0.0.1" :readonly="readonly" />
-      <ConfigField label="Bind Port" type="number" v-model="form.bindPort"
+      <ConfigField :label="$t('visitorForm.bindPort')" type="number" v-model="form.bindPort"
         :min="bindPortMin" :max="65535" prop="bindPort" :readonly="readonly"
         :tip="bindPortTip" />
     </div>
@@ -20,9 +20,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { VisitorFormData } from '../../types'
 import ConfigSection from '../ConfigSection.vue'
 import ConfigField from '../ConfigField.vue'
+
+const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
   modelValue: VisitorFormData
@@ -39,7 +42,7 @@ const form = computed({
 const bindPortMin = computed(() => (form.value.type === 'sudp' ? 1 : undefined))
 const bindPortTip = computed(() => form.value.type === 'sudp'
   ? ''
-  : 'Use -1 to skip the local listener when connections come from another visitor or plugin.')
+  : t('visitorForm.bindPortTip'))
 </script>
 
 <style scoped lang="scss">

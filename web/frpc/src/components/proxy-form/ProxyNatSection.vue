@@ -1,7 +1,7 @@
 <template>
-  <ConfigSection title="NAT Traversal" collapsible :readonly="readonly" :has-value="form.natTraversalDisableAssistedAddrs">
-    <ConfigField label="Disable Assisted Addresses" type="switch" v-model="form.natTraversalDisableAssistedAddrs"
-      tip="Only use STUN-discovered public addresses" :readonly="readonly" />
+  <ConfigSection :title="$t('proxyForm.natTraversal')" collapsible :readonly="readonly" :has-value="form.natTraversalDisableAssistedAddrs">
+    <ConfigField :label="$t('proxyForm.disableAssistedAddrs')" type="switch" v-model="form.natTraversalDisableAssistedAddrs"
+      :tip="$t('proxyForm.disableAssistedAddrsTip')" :readonly="readonly" />
   </ConfigSection>
 </template>
 

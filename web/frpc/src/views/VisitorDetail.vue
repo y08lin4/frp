@@ -3,7 +3,7 @@
     <!-- Fixed Header -->
     <div class="detail-top">
       <nav class="breadcrumb">
-        <router-link to="/visitors" class="breadcrumb-link">Visitors</router-link>
+        <router-link to="/visitors" class="breadcrumb-link">{{ $t('visitors.title') }}</router-link>
         <span class="breadcrumb-sep">&rsaquo;</span>
         <span class="breadcrumb-current">{{ visitorName }}</span>
       </nav>
@@ -12,11 +12,11 @@
         <div class="detail-header">
           <div>
             <h2 class="detail-title">{{ visitor.name }}</h2>
-            <p class="header-subtitle">Type: {{ visitor.type.toUpperCase() }}</p>
+            <p class="header-subtitle">{{ $t('common.type') }}: {{ visitor.type.toUpperCase() }}</p>
           </div>
           <div v-if="isStore" class="header-actions">
             <ActionButton variant="outline" size="small" @click="handleEdit">
-              Edit
+              {{ $t('common.edit') }}
             </ActionButton>
           </div>
         </div>
@@ -24,10 +24,10 @@
     </div>
 
     <div v-if="notFound" class="not-found">
-      <p class="empty-text">Visitor not found</p>
-      <p class="empty-hint">The visitor "{{ visitorName }}" does not exist.</p>
+      <p class="empty-text">{{ $t('visitorDetail.notFound') }}</p>
+      <p class="empty-hint">{{ visitorName }}</p>
       <ActionButton variant="outline" @click="router.push('/visitors')">
-        Back to Visitors
+        {{ $t('visitors.title') }}
       </ActionButton>
     </div>
 
@@ -47,6 +47,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import ActionButton from '@shared/components/ActionButton.vue'
 import VisitorFormLayout from '../components/visitor-form/VisitorFormLayout.vue'
@@ -54,6 +55,7 @@ import { getVisitorConfig, getStoreVisitor } from '../api/frpc'
 import type { VisitorDefinition, VisitorFormData } from '../types'
 import { storeVisitorToForm } from '../types'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
@@ -80,7 +82,7 @@ onMounted(async () => {
       notFound.value = true
     } else {
       notFound.value = true
-      ElMessage.error('Failed to load visitor: ' + err.message)
+      ElMessage.error(t('visitorDetail.loadFailed', { msg: err.message }))
     }
   } finally {
     loading.value = false

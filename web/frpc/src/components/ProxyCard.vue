@@ -29,19 +29,19 @@
             </template>
             <PopoverMenuItem v-if="proxy.status === 'disabled'" @click="$emit('toggle', proxy, true)">
               <el-icon><Open /></el-icon>
-              Enable
+              {{ $t('common.enable') }}
             </PopoverMenuItem>
             <PopoverMenuItem v-else @click="$emit('toggle', proxy, false)">
               <el-icon><TurnOff /></el-icon>
-              Disable
+              {{ $t('common.disable') }}
             </PopoverMenuItem>
             <PopoverMenuItem @click="$emit('edit', proxy)">
               <el-icon><Edit /></el-icon>
-              Edit
+              {{ $t('common.edit') }}
             </PopoverMenuItem>
             <PopoverMenuItem danger @click="$emit('delete', proxy)">
               <el-icon><Delete /></el-icon>
-              Delete
+              {{ $t('common.delete') }}
             </PopoverMenuItem>
           </PopoverMenu>
         </div>

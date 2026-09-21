@@ -4,21 +4,21 @@
     <div class="page-top">
       <!-- Header -->
       <div class="page-header">
-        <h2 class="page-title">Proxies</h2>
+        <h2 class="page-title">{{ $t('proxies.title') }}</h2>
       </div>
 
       <!-- Tabs -->
       <div class="tab-bar">
         <div class="tab-buttons">
-          <button class="tab-btn" :class="{ active: activeTab === 'status' }" @click="switchTab('status')">Status</button>
-          <button class="tab-btn" :class="{ active: activeTab === 'store' }" @click="switchTab('store')">Store</button>
+          <button class="tab-btn" :class="{ active: activeTab === 'status' }" @click="switchTab('status')">{{ $t('proxies.statusTab') }}</button>
+          <button class="tab-btn" :class="{ active: activeTab === 'store' }" @click="switchTab('store')">{{ $t('proxies.storeTab') }}</button>
         </div>
         <div class="tab-actions">
           <ActionButton variant="outline" size="small" @click="refreshData">
             <el-icon><Refresh /></el-icon>
           </ActionButton>
           <ActionButton v-if="activeTab === 'store' && proxyStore.storeEnabled" size="small" @click="handleCreate">
-            + New Proxy
+            {{ $t('proxies.newProxy') }}
           </ActionButton>
         </div>
       </div>
@@ -27,21 +27,21 @@
       <template v-if="activeTab === 'status'">
         <StatusPills v-if="!isMobile" :items="proxyStore.proxies" v-model="statusFilter" />
         <div class="filter-bar">
-          <el-input v-model="searchText" placeholder="Search..." clearable class="search-input">
+          <el-input v-model="searchText" :placeholder="$t('common.search')" clearable class="search-input">
             <template #prefix><el-icon><Search /></el-icon></template>
           </el-input>
-          <FilterDropdown v-model="sourceFilter" label="Source" :options="sourceOptions" :min-width="140" :is-mobile="isMobile" />
-          <FilterDropdown v-model="typeFilter" label="Type" :options="typeOptions" :min-width="140" :is-mobile="isMobile" />
+          <FilterDropdown v-model="sourceFilter" :label="$t('proxies.source')" :options="sourceOptions" :min-width="140" :is-mobile="isMobile" />
+          <FilterDropdown v-model="typeFilter" :label="$t('common.type')" :options="typeOptions" :min-width="140" :is-mobile="isMobile" />
         </div>
       </template>
 
       <!-- Store Tab Filters -->
       <template v-if="activeTab === 'store' && proxyStore.storeEnabled">
         <div class="filter-bar">
-          <el-input v-model="storeSearch" placeholder="Search..." clearable class="search-input">
+          <el-input v-model="storeSearch" :placeholder="$t('common.search')" clearable class="search-input">
             <template #prefix><el-icon><Search /></el-icon></template>
           </el-input>
-          <FilterDropdown v-model="storeTypeFilter" label="Type" :options="storeTypeOptions" :min-width="140" :is-mobile="isMobile" />
+          <FilterDropdown v-model="storeTypeFilter" :label="$t('common.type')" :options="storeTypeOptions" :min-width="140" :is-mobile="isMobile" />
         </div>
       </template>
     </div>
@@ -60,15 +60,15 @@
           />
         </div>
         <div v-else-if="!proxyStore.loading" class="empty-state">
-          <p class="empty-text">No proxies found</p>
-          <p class="empty-hint">Proxies will appear here once configured and connected.</p>
+          <p class="empty-text">{{ $t('proxies.noProxies') }}</p>
+          <p class="empty-hint">{{ $t('proxies.noProxiesHint') }}</p>
         </div>
       </div>
 
       <!-- Store Tab List -->
       <div v-if="activeTab === 'store'" v-loading="proxyStore.storeLoading">
         <div v-if="!proxyStore.storeEnabled" class="store-disabled">
-          <p>Store is not enabled. Add the following to your frpc configuration:</p>
+          <p>{{ $t('proxies.storeDisabled') }}</p>
           <pre class="config-hint">[store]
 path = "./frpc_store.json"</pre>
         </div>
@@ -86,8 +86,8 @@ path = "./frpc_store.json"</pre>
             />
           </div>
           <div v-else class="empty-state">
-            <p class="empty-text">No store proxies</p>
-            <p class="empty-hint">Click "New Proxy" to create one.</p>
+            <p class="empty-text">{{ $t('proxies.noStoreProxies') }}</p>
+            <p class="empty-hint">{{ $t('visitors.noVisitorsHint') ? $t('proxies.noProxiesHint') : '' }}</p>
           </div>
         </template>
       </div>
@@ -95,9 +95,9 @@ path = "./frpc_store.json"</pre>
 
     <ConfirmDialog
       v-model="deleteDialog.visible"
-      title="Delete Proxy"
+      :title="$t('proxies.deleteTitle')"
       :message="deleteDialog.message"
-      confirm-text="Delete"
+      :confirm-text="$t('proxies.deleteConfirm')"
       danger
       :loading="deleteDialog.loading"
       :is-mobile="isMobile"
@@ -109,6 +109,7 @@ path = "./frpc_store.json"</pre>
 <script setup lang="ts">
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import ActionButton from '@shared/components/ActionButton.vue'
@@ -120,6 +121,7 @@ import { useProxyStore } from '../stores/proxy'
 import { useResponsive } from '../composables/useResponsive'
 import type { ProxyStatus } from '../types'
 
+const { t } = useI18n()
 const { isMobile } = useResponsive()
 
 const route = useRoute()
@@ -147,7 +149,7 @@ const storeTypeFilter = ref('')
 // Delete dialog
 const deleteDialog = reactive({
   visible: false,
-  title: 'Delete Proxy',
+  title: '',
   message: '',
   loading: false,
   name: '',
@@ -243,7 +245,7 @@ const filteredStoreProxies = computed(() => {
 // Data fetching
 const refreshData = () => {
   proxyStore.fetchStatus().catch((err: any) => {
-    ElMessage.error('Failed to get status: ' + err.message)
+    ElMessage.error(t('proxies.fetchStatusFailed', { msg: err.message }))
   })
   proxyStore.fetchStoreProxies()
 }
@@ -264,15 +266,15 @@ const handleEdit = (proxy: ProxyStatus) => {
 const handleToggleProxy = async (proxy: ProxyStatus, enabled: boolean) => {
   try {
     await proxyStore.toggleProxy(proxy.name, enabled)
-    ElMessage.success(enabled ? 'Proxy enabled' : 'Proxy disabled')
+    ElMessage.success(enabled ? t('proxies.enabledMsg') : t('proxies.disabledMsg'))
   } catch (err: any) {
-    ElMessage.error('Operation failed: ' + (err.message || 'Unknown error'))
+    ElMessage.error(t('common.operationFailed', { msg: err.message || t('common.unknownError') }))
   }
 }
 
 const handleDeleteProxy = (name: string) => {
   deleteDialog.name = name
-  deleteDialog.message = `Are you sure you want to delete "${name}"? This action cannot be undone.`
+  deleteDialog.message = t('proxies.deleteTitle') + ': "' + name + '"'
   deleteDialog.visible = true
 }
 
@@ -280,11 +282,11 @@ const doDelete = async () => {
   deleteDialog.loading = true
   try {
     await proxyStore.deleteProxy(deleteDialog.name)
-    ElMessage.success('Proxy deleted')
+    ElMessage.success(t('proxies.deleteSuccess'))
     deleteDialog.visible = false
     proxyStore.fetchStatus()
   } catch (err: any) {
-    ElMessage.error('Delete failed: ' + (err.message || 'Unknown error'))
+    ElMessage.error(t('proxies.deleteFailed', { msg: err.message || t('common.unknownError') }))
   } finally {
     deleteDialog.loading = false
   }
